@@ -32,13 +32,15 @@ const CartProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     async function loadProducts(): Promise<void> {
-      const product = await AsyncStorage.getItem('Items');
+      const items = await AsyncStorage.getItem('Items');
 
-      console.log(JSON.parse(product));
+      if (items) {
+        setProducts(JSON.parse(items));
+      }
     }
 
     loadProducts();
-  }, [products]);
+  }, []);
 
   const addToCart = useCallback(
     async product => {
@@ -48,6 +50,8 @@ const CartProvider: React.FC = ({ children }) => {
         const searchSameItem = products.find(prod => prod.id === id);
 
         if (searchSameItem) {
+          // dar uma analisada no exe de node
+          // eslint-disable-next-line no-plusplus
           searchSameItem.quantity++;
 
           await AsyncStorage.setItem('Items', JSON.stringify(products));
