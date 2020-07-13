@@ -6,6 +6,8 @@ import React, {
   useEffect,
 } from 'react';
 
+import { Alert } from 'react-native';
+
 import AsyncStorage from '@react-native-community/async-storage';
 
 interface Product {
@@ -30,15 +32,42 @@ const CartProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     async function loadProducts(): Promise<void> {
-      // TODO LOAD ITEMS FROM ASYNC STORAGE
+      const product = await AsyncStorage.getItem('Items');
+
+      console.log(JSON.parse(product));
     }
 
     loadProducts();
-  }, []);
+  }, [products]);
 
-  const addToCart = useCallback(async product => {
-    // TODO ADD A NEW ITEM TO THE CART
-  }, []);
+  const addToCart = useCallback(
+    async product => {
+      try {
+        const { id, title, image_url, price, quantity = 1 } = product;
+
+        const searchSameItem = products.find(prod => prod.id === id);
+
+        if (searchSameItem) {
+          searchSameItem.quantity++;
+
+          await AsyncStorage.setItem('Items', JSON.stringify(products));
+
+          console.log(products);
+          return;
+        }
+
+        setProducts([...products, { id, title, image_url, price, quantity }]);
+
+        await AsyncStorage.setItem(
+          'Items',
+          JSON.stringify({ id, title, image_url, price, quantity }),
+        );
+      } catch (err) {
+        Alert.alert('error', 'we do not have this product anymore');
+      }
+    },
+    [products],
+  );
 
   const increment = useCallback(async id => {
     // TODO INCREMENTS A PRODUCT QUANTITY IN THE CART
