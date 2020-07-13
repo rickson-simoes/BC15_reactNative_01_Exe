@@ -55,8 +55,6 @@ const CartProvider: React.FC = ({ children }) => {
           searchSameItem.quantity++;
 
           await AsyncStorage.setItem('Items', JSON.stringify(products));
-
-          console.log(products);
           return;
         }
 
