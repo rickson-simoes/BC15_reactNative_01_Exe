@@ -32,10 +32,10 @@ const CartProvider: React.FC = ({ children }) => {
 
   useEffect(() => {
     async function loadProducts(): Promise<void> {
-      const items = await AsyncStorage.getItem('Items');
+      const items = await AsyncStorage.getItem('@Market:Item');
 
       if (items) {
-        setProducts(JSON.parse(items));
+        setProducts([...JSON.parse(items)]);
       }
     }
 
@@ -50,18 +50,17 @@ const CartProvider: React.FC = ({ children }) => {
         const searchSameItem = products.find(prod => prod.id === id);
 
         if (searchSameItem) {
-          // dar uma analisada no exe de node
           // eslint-disable-next-line no-plusplus
           searchSameItem.quantity++;
 
-          await AsyncStorage.setItem('Items', JSON.stringify(products));
+          await AsyncStorage.setItem('@Market:Item', JSON.stringify(products));
           return;
         }
 
         setProducts([...products, { id, title, image_url, price, quantity }]);
 
         await AsyncStorage.setItem(
-          'Items',
+          '@Market:Item',
           JSON.stringify({ id, title, image_url, price, quantity }),
         );
       } catch (err) {
