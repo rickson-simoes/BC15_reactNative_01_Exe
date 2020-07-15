@@ -16,21 +16,39 @@ import formatValue from '../../utils/formatValue';
 import { useCart } from '../../hooks/cart';
 
 const FloatingCart: React.FC = () => {
+  const [qtdeItens, setQtdeItens] = useState<number>(0);
+  const [valorTotalItens, setValorTotalItens] = useState<number>(0);
+
   const { products } = useCart();
 
   const navigation = useNavigation();
 
   const cartTotal = useMemo(() => {
-    // TODO RETURN THE SUM OF THE PRICE FROM ALL ITEMS IN THE CART
+    const valorTotal = products.reduce(
+      (acc, uni) => acc + uni.quantity * uni.price,
+      0,
+    );
+
+    if (valorTotal) {
+      setValorTotalItens(valorTotal);
+
+      return formatValue(valorTotalItens);
+    }
 
     return formatValue(0);
-  }, [products]);
+  }, [products, valorTotalItens]);
 
   const totalItensInCart = useMemo(() => {
-    // TODO RETURN THE SUM OF THE QUANTITY OF THE PRODUCTS IN THE CART
+    const qntdTotal = products.reduce((acc, uni) => acc + uni.quantity, 0);
+
+    if (qntdTotal) {
+      setQtdeItens(qntdTotal);
+
+      return qtdeItens;
+    }
 
     return 0;
-  }, [products]);
+  }, [products, qtdeItens]);
 
   return (
     <Container>
