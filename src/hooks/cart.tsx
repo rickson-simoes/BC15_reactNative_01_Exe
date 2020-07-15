@@ -53,6 +53,8 @@ const CartProvider: React.FC = ({ children }) => {
           // eslint-disable-next-line no-plusplus
           searchSameItem.quantity++;
 
+          setProducts([...products]);
+
           await AsyncStorage.setItem('@Market:Item', JSON.stringify(products));
           return;
         }
@@ -70,13 +72,33 @@ const CartProvider: React.FC = ({ children }) => {
     [products],
   );
 
-  const increment = useCallback(async id => {
-    // TODO INCREMENTS A PRODUCT QUANTITY IN THE CART
-  }, []);
+  const increment = useCallback(
+    async id => {
+      const productItem = products.find(product => product.id === id);
+      if (productItem) {
+        productItem.quantity++;
 
-  const decrement = useCallback(async id => {
-    // TODO DECREMENTS A PRODUCT QUANTITY IN THE CART
-  }, []);
+        setProducts([...products]);
+
+        await AsyncStorage.setItem('@Market:Item', JSON.stringify(products));
+      }
+    },
+    [products],
+  );
+
+  const decrement = useCallback(
+    async id => {
+      const productItem = products.find(product => product.id === id);
+      if (productItem) {
+        productItem.quantity--;
+
+        setProducts([...products]);
+
+        await AsyncStorage.setItem('@Market:Item', JSON.stringify(products));
+      }
+    },
+    [products],
+  );
 
   const value = React.useMemo(
     () => ({ addToCart, increment, decrement, products }),
