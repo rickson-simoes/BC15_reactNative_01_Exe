@@ -50,7 +50,6 @@ const CartProvider: React.FC = ({ children }) => {
         const searchSameItem = products.find(prod => prod.id === id);
 
         if (searchSameItem) {
-          // eslint-disable-next-line no-plusplus
           searchSameItem.quantity++;
 
           setProducts([...products]);
