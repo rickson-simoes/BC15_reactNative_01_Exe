@@ -34,6 +34,9 @@ const CartProvider: React.FC = ({ children }) => {
     async function loadProducts(): Promise<void> {
       const items = await AsyncStorage.getItem('@Market:Item');
 
+      console.log('visualizacao dos itens do use effect abaixo');
+      console.log(JSON.parse(items));
+
       if (items) {
         setProducts([...JSON.parse(items)]);
       }
@@ -45,24 +48,18 @@ const CartProvider: React.FC = ({ children }) => {
   const addToCart = useCallback(
     async product => {
       try {
-        const { id, title, image_url, price, quantity = 1 } = product;
-
-        const searchSameItem = products.find(prod => prod.id === id);
+        const searchSameItem = products.find(prod => prod.id === product.id);
 
         if (searchSameItem) {
           searchSameItem.quantity++;
 
           setProducts([...products]);
-
-          await AsyncStorage.setItem('@Market:Item', JSON.stringify(products));
-          return;
+        } else {
+          setProducts([...products, { ...product, quantity: 1 }]);
         }
-
-        setProducts([...products, { id, title, image_url, price, quantity }]);
-
         await AsyncStorage.setItem(
           '@Market:Item',
-          JSON.stringify({ id, title, image_url, price, quantity }),
+          JSON.stringify([...products, { ...product, quantity: 1 }]),
         );
       } catch (err) {
         Alert.alert('error', 'we do not have this product anymore');
