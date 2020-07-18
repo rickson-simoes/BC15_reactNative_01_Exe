@@ -82,11 +82,17 @@ const CartProvider: React.FC = ({ children }) => {
       let addProduct;
 
       if (productItem) {
-        addProduct = products.map(p =>
-          p.id === id ? { ...p, quantity: p.quantity + 1 } : p,
-        );
+        productItem.quantity++;
 
-        setProducts(addProduct);
+        /** 2ª forma para reproduzir uma adição dentro de array:
+         *
+         * products.map( pro => pro.id === id ? {...pro, quantity: pro.quantity + 1} : pro)
+         *
+         * */
+
+        addProduct = products;
+
+        setProducts([...addProduct]);
 
         await AsyncStorage.setItem('@Market:Item', JSON.stringify(addProduct));
       }
@@ -100,19 +106,14 @@ const CartProvider: React.FC = ({ children }) => {
 
       let subProduct;
 
-      if (productItem) {
-        if (productItem.quantity > 1) {
-          subProduct = products.map(p =>
-            p.id === id ? { ...p, quantity: p.quantity - 1 } : p,
-          );
+      if (productItem && productItem.quantity >= 1) {
+        productItem.quantity--;
 
-          setProducts(subProduct);
+        subProduct = products;
 
-          await AsyncStorage.setItem(
-            '@Market:Item',
-            JSON.stringify(subProduct),
-          );
-        }
+        setProducts([...subProduct]);
+
+        await AsyncStorage.setItem('@Market:Item', JSON.stringify(subProduct));
       }
     },
     [products],
