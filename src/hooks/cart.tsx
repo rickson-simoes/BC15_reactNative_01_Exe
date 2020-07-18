@@ -50,16 +50,23 @@ const CartProvider: React.FC = ({ children }) => {
       try {
         const searchSameItem = products.find(prod => prod.id === product.id);
 
+        let productsUpdated;
+
         if (searchSameItem) {
           searchSameItem.quantity++;
 
-          setProducts([...products]);
+          productsUpdated = products;
+
+          setProducts([...productsUpdated]);
         } else {
-          setProducts([...products, { ...product, quantity: 1 }]);
+          productsUpdated = [...products, { ...product, quantity: 1 }];
+
+          setProducts(productsUpdated);
         }
+
         await AsyncStorage.setItem(
           '@Market:Item',
-          JSON.stringify([...products, { ...product, quantity: 1 }]),
+          JSON.stringify(productsUpdated),
         );
       } catch (err) {
         Alert.alert('error', 'we do not have this product anymore');
@@ -71,12 +78,17 @@ const CartProvider: React.FC = ({ children }) => {
   const increment = useCallback(
     async id => {
       const productItem = products.find(product => product.id === id);
+
+      let addProduct;
+
       if (productItem) {
-        productItem.quantity++;
+        addProduct = products.map(p =>
+          p.id === id ? { ...p, quantity: p.quantity + 1 } : p,
+        );
 
-        setProducts([...products]);
+        setProducts(addProduct);
 
-        await AsyncStorage.setItem('@Market:Item', JSON.stringify(products));
+        await AsyncStorage.setItem('@Market:Item', JSON.stringify(addProduct));
       }
     },
     [products],
@@ -85,13 +97,21 @@ const CartProvider: React.FC = ({ children }) => {
   const decrement = useCallback(
     async id => {
       const productItem = products.find(product => product.id === id);
+
+      let subProduct;
+
       if (productItem) {
         if (productItem.quantity > 1) {
-          productItem.quantity--;
+          subProduct = products.map(p =>
+            p.id === id ? { ...p, quantity: p.quantity - 1 } : p,
+          );
 
-          setProducts([...products]);
+          setProducts(subProduct);
 
-          await AsyncStorage.setItem('@Market:Item', JSON.stringify(products));
+          await AsyncStorage.setItem(
+            '@Market:Item',
+            JSON.stringify(subProduct),
+          );
         }
       }
     },
